@@ -17,13 +17,16 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Conexión directa a PostgreSQL sin middleware adicional
+// Conexión directa a PostgreSQL con SSL habilitado
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Verificar conexión a la base de datos al iniciar
@@ -51,10 +54,11 @@ app.use('/api/reservas', reservasRoutes);
 app.use('/api/resenas', reseñasRoutes);
 app.use('/api/favoritos', favoritosRoutes);
 app.use('/api/usuarios', usuariosRoutes);
-app.use('/api/bloqueos', bloqueosRoutes); 
+app.use('/api/bloqueos', bloqueosRoutes);
+
 // Ruta de verificación de salud
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     status: 'OK',
     database: 'PostgreSQL',
     timestamp: new Date().toISOString()
